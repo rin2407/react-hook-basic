@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
+import queryString from 'query-string';
 import "./App.scss";
 // import ColorBox from './components/ColorBox';
 import TodoList from "./components/ToDoList";
 import TodoForm from "./components/TodoForm";
 import PostList from "./components/PostList";
+import Pagination from "./components/Pagination";
+import PostFillterForm from "./components/PostFillterForm";
 function App() {
   const [todoList, setTodoList] = useState([
     { id: 1, title: "mootj" },
@@ -11,20 +14,31 @@ function App() {
     { id: 3, title: "ba" },
   ]);
   const [postList, setPostList] = useState([]);
+  const [paginaton,setPagination]= useState({
+    _page:1,
+    _limit:10,
+    _totalRows:1
+  })
+  const [fillter,setFillter]= useState({
+    _limit:10,
+    _page:1
+  })
   useEffect(() => {
     async function fetchPostList() {
       try {
-        const requestUrl ="http://js-post-api.herokuapp.com/api/posts?_limit=10&_page=1";
+        const paramString= queryString.stringify(fillter)
+        const requestUrl =`http://js-post-api.herokuapp.com/api/posts?${paramString}`;
         const response = await fetch(requestUrl);
         const responseJSON = await response.json();
-        const { data } = responseJSON;
+        const { data,pagination } = responseJSON;
         setPostList(data);
-      } catch (error) {
+        setPagination(pagination);
+      } catch (error) { 
         console.log(error.message);
       }
     }
     fetchPostList();
-  }, []);
+  }, [fillter]);
   function handleTodoClick(todo) {
     const index = todoList.findIndex((x) => x.id === todo.id);
     if (index < 0) return;
@@ -42,6 +56,20 @@ function App() {
     newTodoList.push(newTodo);
     setTodoList(newTodoList);
   }
+  function handlePageChange(newPage){
+    setFillter({
+      ...fillter,
+      _page:newPage
+    })
+  }
+  function handleFillterChange(newFillter){
+    console.log("new fillter",newFillter)
+    setFillter({
+      ...fillter,
+      _page:1,
+      title_like: newFillter.searchTerm
+    })
+  }
   return (
     <div className="app">
       <h1>React to do list</h1>
@@ -49,7 +77,12 @@ function App() {
       <TodoForm onSubmit={handleFormSubmit}></TodoForm>
       <TodoList todos={todoList} onTodoClick={handleTodoClick}></TodoList>
       <h1>React post list call api</h1>
+      <PostFillterForm onSubmit={handleFillterChange}></PostFillterForm>
       <PostList posts={postList}></PostList>
+      <Pagination 
+         pagination={paginaton}
+         onPageChange={handlePageChange}
+      ></Pagination>
     </div>
   );
 }
