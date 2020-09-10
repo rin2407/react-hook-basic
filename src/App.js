@@ -7,6 +7,8 @@ import TodoForm from "./components/TodoForm";
 import PostList from "./components/PostList";
 import Pagination from "./components/Pagination";
 import PostFillterForm from "./components/PostFillterForm";
+import Clock from "./components/Clock";
+import MagicBox from "./components/MagicBox";
 function App() {
   const [todoList, setTodoList] = useState([
     { id: 1, title: "mootj" },
@@ -83,6 +85,10 @@ function App() {
          pagination={paginaton}
          onPageChange={handlePageChange}
       ></Pagination>
+      <h2>Clock</h2>
+      <Clock/>
+      <h3>Magic box</h3>
+      <MagicBox/>
     </div>
   );
 }
