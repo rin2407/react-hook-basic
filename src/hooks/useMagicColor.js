@@ -17,7 +17,7 @@ function useMagicColor(props) {
             const newColor= randomColor(ColorRef.current);
             setColor(newColor);
             ColorRef.current= newColor;
-        },1000)
+        },2000)
         return () => {
             clearInterval(colorIntervel);
         }
